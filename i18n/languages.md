@@ -10,6 +10,7 @@
 - [English](https://github.com/supabase/supabase)
 - [Finnish / Suomalainen](/i18n/README.fi.md)
 - [French / Français](/i18n/README.fr.md)
+- [Galician / Galego](/i18n/README.gl.md)
 - [German / Deutsch](/i18n/README.de.md)
 - [Greek / Ελληνικά](/i18n/README.gr.md)
 - [Gujarati / ગુજરાતી](/i18n/README.gu.md)
