@@ -30,12 +30,12 @@ const questions = [
   'How do I connect to my database?',
   'How do I run migrations? ',
   'How do I listen to changes in a table?',
-  'How do I setup authentication?',
+  'How do I set up authentication?',
 ]
 
 function getEdgeFunctionUrl() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL.replace(/\/$/, '')
-  const isPlatform = supabaseUrl.match(/(supabase\.co)|(supabase\.in)/)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, '')
+  const isPlatform = supabaseUrl?.match(/(supabase\.co)|(supabase\.in)/)
 
   if (isPlatform) {
     const [schemeAndProjectId, domain, tld] = supabaseUrl.split('.')
@@ -237,7 +237,7 @@ const ClippyModal: FC<Props> = ({ onClose }) => {
           <div className="flex justify-between items-center py-2 text-xs">
             <div className="flex items-centerp gap-1 pt-3 pb-1">
               <span>Powered by OpenAI.</span>
-              <a href="/blog/clippy" className="underline">
+              <a href="/blog/chatgpt-supabase-docs" className="underline">
                 Read the blog post
               </a>
             </div>
