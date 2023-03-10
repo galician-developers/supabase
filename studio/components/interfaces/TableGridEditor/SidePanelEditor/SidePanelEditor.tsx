@@ -1,16 +1,26 @@
 import { FC, useState } from 'react'
 import { find, isEmpty, isUndefined } from 'lodash'
-import { Query, Dictionary } from 'components/grid'
+import { Dictionary } from 'components/grid'
 import { Modal } from 'ui'
-import type { PostgresRelationship, PostgresTable, PostgresColumn } from '@supabase/postgres-meta'
+import type { PostgresTable, PostgresColumn } from '@supabase/postgres-meta'
 
 import { useStore } from 'hooks'
+import { useTableRowCreateMutation } from 'data/table-rows/table-row-create-mutation'
+import { useTableRowUpdateMutation } from 'data/table-rows/table-row-update-mutation'
 import { RowEditor, ColumnEditor, TableEditor } from '.'
 import { ImportContent } from './TableEditor/TableEditor.types'
-import { ColumnField, CreateColumnPayload, UpdateColumnPayload } from './SidePanelEditor.types'
+import {
+  ColumnField,
+  CreateColumnPayload,
+  ExtendedPostgresRelationship,
+  UpdateColumnPayload,
+} from './SidePanelEditor.types'
+import { useProjectContext } from 'components/layouts/ProjectLayout/ProjectContext'
 import ConfirmationModal from 'components/ui/ConfirmationModal'
 import JsonEdit from './RowEditor/JsonEditor/JsonEditor'
 import { JsonEditValue } from './RowEditor/RowEditor.types'
+import { useQueryClient } from '@tanstack/react-query'
+import { sqlKeys } from 'data/sql/keys'
 
 interface Props {
   selectedSchema: string
@@ -47,11 +57,16 @@ const SidePanelEditor: FC<Props> = ({
   onColumnSaved = () => {},
 }) => {
   const { meta, ui } = useStore()
+  const queryClient = useQueryClient()
 
   const [isEdited, setIsEdited] = useState<boolean>(false)
   const [isClosingPanel, setIsClosingPanel] = useState<boolean>(false)
 
   const tables = meta.tables.list()
+
+  const { project } = useProjectContext()
+  const { mutateAsync: createTableRow } = useTableRowCreateMutation()
+  const { mutateAsync: updateTableRow } = useTableRowUpdateMutation()
 
   const saveRow = async (
     payload: any,
@@ -59,7 +74,9 @@ const SidePanelEditor: FC<Props> = ({
     configuration: { identifiers: any; rowIdx: number },
     onComplete: Function
   ) => {
-    if (selectedTable === undefined) return
+    if (!project || selectedTable === undefined) {
+      return console.error('no project or table selected')
+    }
 
     let saveRowError = false
     // @ts-ignore
@@ -70,34 +87,40 @@ const SidePanelEditor: FC<Props> = ({
       .map((column) => column.name)
 
     if (isNewRecord) {
-      const insertQuery = new Query()
-        .from(selectedTable.name, selectedTable.schema)
-        .insert([payload], { returning: true, enumArrayColumns })
-        .toSql()
+      try {
+        const result = await createTableRow({
+          projectRef: project.ref,
+          connectionString: project.connectionString,
+          table: selectedTable as any,
+          payload,
+          enumArrayColumns,
+        })
 
-      const res: any = await meta.query(insertQuery)
-      if (res.error) {
+        onRowCreated(result[0])
+      } catch (error: any) {
         saveRowError = true
-        ui.setNotification({ category: 'error', message: res.error?.message })
-      } else {
-        onRowCreated(res[0])
+        ui.setNotification({ category: 'error', message: error?.message })
       }
     } else {
       const hasChanges = !isEmpty(payload)
       if (hasChanges) {
         if (selectedTable.primary_keys.length > 0) {
-          const updateQuery = new Query()
-            .from(selectedTable.name, selectedTable.schema)
-            .update(payload, { returning: true, enumArrayColumns })
-            .match(configuration.identifiers)
-            .toSql()
+          if (selectedTable!.primary_keys.length > 0) {
+            try {
+              const result = await updateTableRow({
+                projectRef: project.ref,
+                connectionString: project.connectionString,
+                table: selectedTable as any,
+                configuration,
+                payload,
+                enumArrayColumns,
+              })
 
-          const res: any = await meta.query(updateQuery)
-          if (res.error) {
-            saveRowError = true
-            ui.setNotification({ category: 'error', message: res.error?.message })
-          } else {
-            onRowUpdated(res[0], configuration.rowIdx)
+              onRowUpdated(result[0], configuration.rowIdx)
+            } catch (error: any) {
+              saveRowError = true
+              ui.setNotification({ category: 'error', message: error?.message })
+            }
           }
         } else {
           saveRowError = true
@@ -135,7 +158,7 @@ const SidePanelEditor: FC<Props> = ({
 
   const saveColumn = async (
     payload: CreateColumnPayload | UpdateColumnPayload,
-    foreignKey: Partial<PostgresRelationship> | undefined,
+    foreignKey: ExtendedPostgresRelationship | undefined,
     isNewRecord: boolean,
     configuration: { columnId?: string; isEncrypted: boolean; keyId?: string; keyName?: string },
     resolve: any
@@ -159,6 +182,7 @@ const SidePanelEditor: FC<Props> = ({
       ui.setNotification({ category: 'error', message: response.error.message })
     } else {
       await meta.tables.loadById(selectedTable!.id)
+      queryClient.invalidateQueries(sqlKeys.query(project?.ref, ['foreignKeyConstraints']))
       onColumnSaved(configuration.isEncrypted)
       setIsEdited(false)
       closePanel()
@@ -254,6 +278,7 @@ const SidePanelEditor: FC<Props> = ({
           })
         }
       }
+      queryClient.invalidateQueries(sqlKeys.query(project?.ref, ['foreignKeyConstraints']))
     } catch (error: any) {
       saveTableError = true
       ui.setNotification({ id: toastId, category: 'error', message: error.message })
@@ -289,7 +314,6 @@ const SidePanelEditor: FC<Props> = ({
       )}
       {!isUndefined(selectedTable) && (
         <ColumnEditor
-          tables={tables}
           column={selectedColumnToEdit}
           selectedTable={selectedTable}
           visible={sidePanelKey === 'column'}

@@ -308,6 +308,17 @@ export const auth = {
           url: '/guides/auth/social-login',
           items: [...SocialLoginItems],
         },
+        {
+          name: 'Enterprise SSO',
+          url: '/guides/auth/enterprise-sso',
+          items: [
+            {
+              name: 'SAML 2.0 (Beta)',
+              url: '/guides/auth/sso/auth-sso-saml',
+              items: [],
+            },
+          ],
+        },
         { name: 'Email Templates', url: '/guides/auth/auth-email-templates', items: [] },
       ],
     },
@@ -400,13 +411,38 @@ export const database = {
         },
         { name: 'http: RESTful Client', url: '/guides/database/extensions/http', items: [] },
         {
+          name: 'PGAudit: Postgres Auditing',
+          url: '/guides/database/extensions/pgaudit',
+          items: [],
+        },
+        {
+          name: 'pgjwt: JSON Web Tokens',
+          url: '/guides/database/extensions/pgjwt',
+          items: [],
+        },
+        {
           name: 'PGroonga: Multilingual Full Text Search',
           url: '/guides/database/extensions/pgroonga',
           items: [],
         },
         {
+          name: 'pgRouting: Geospatial Routing',
+          url: '/guides/database/extensions/pgrouting',
+          items: [],
+        },
+        {
           name: 'pg_cron: Job Scheduling',
           url: '/guides/database/extensions/pgcron',
+          items: [],
+        },
+        {
+          name: 'pg_graphql: GraphQL Support',
+          url: '/guides/database/extensions/pg_graphql',
+          items: [],
+        },
+        {
+          name: 'pg_hashids: Short UIDs',
+          url: '/guides/database/extensions/pg_hashids',
           items: [],
         },
         {
@@ -417,6 +453,16 @@ export const database = {
         {
           name: 'pg_net: Async Networking',
           url: '/guides/database/extensions/pgnet',
+          items: [],
+        },
+        {
+          name: 'pg_plan_filter: Restrict Total Cost',
+          url: '/guides/database/extensions/pg_plan_filter',
+          items: [],
+        },
+        {
+          name: 'pg_stat_monitor: Extended Query Performance Monitoring',
+          url: '/guides/database/extensions/pg_stat_monitor',
           items: [],
         },
         {
@@ -439,7 +485,27 @@ export const database = {
           url: '/guides/database/extensions/postgis',
           items: [],
         },
+        {
+          name: 'pg-safeupdate: Required Where Clauses',
+          url: '/guides/database/extensions/pg-safeupdate',
+          items: [],
+        },
+        {
+          name: 'pgsodium: Encryption Features',
+          url: '/guides/database/extensions/pgsodium',
+          items: [],
+        },
         { name: 'pgTAP: Unit Testing', url: '/guides/database/extensions/pgtap', items: [] },
+        {
+          name: 'plpgsql_check: PL/pgSQL Linter',
+          url: '/guides/database/extensions/plpgsql_check',
+          items: [],
+        },
+        {
+          name: 'timescaledb: Time-series data',
+          url: '/guides/database/extensions/timescaledb',
+          items: [],
+        },
         {
           name: 'uuid-ossp: Unique Identifiers',
           url: '/guides/database/extensions/uuid-ossp',
@@ -449,6 +515,33 @@ export const database = {
           name: 'RUM: inverted index for full-text search',
           url: '/guides/database/extensions/rum',
           items: [],
+        },
+        {
+          name: 'wrappers: 3rd Party Integrations',
+          url: '/guides/database/extensions/wrappers',
+          items: [],
+        },
+      ],
+    },
+    {
+      name: 'Postgres resources',
+      url: undefined,
+      items: [
+        {
+          name: 'Managing Indexes',
+          url: '/guides/database/postgres/indexes',
+        },
+        {
+          name: 'Drop All Tables in Schema',
+          url: '/guides/database/postgres/dropping-all-tables-in-schema',
+        },
+        {
+          name: 'Select First Row per Group',
+          url: '/guides/database/postgres/first-row-in-group',
+        },
+        {
+          name: 'Print PostgreSQL Version',
+          url: '/guides/database/postgres/which-version-of-postgres',
         },
       ],
     },
@@ -493,8 +586,10 @@ export const functions = {
           url: '/guides/functions/examples/connect-to-postgres',
           items: [],
         },
+        { name: 'Discord Bot', url: '/guides/functions/examples/discord-bot', items: [] },
         { name: 'GitHub Actions', url: '/guides/functions/examples/github-actions', items: [] },
         { name: 'OG Image', url: '/guides/functions/examples/og-image', items: [] },
+        { name: 'OpenAI', url: '/guides/functions/examples/openai', items: [] },
         { name: 'Storage Caching', url: '/guides/functions/examples/storage-caching', items: [] },
         { name: 'Stripe Webhooks', url: '/guides/functions/examples/stripe-webhooks', items: [] },
         { name: 'Telegram Bot', url: '/guides/functions/examples/telegram-bot', items: [] },
@@ -575,7 +670,7 @@ export const platform = {
       url: undefined,
       items: [
         { name: 'Access Control', url: '/guides/platform/access-control', items: [] },
-        { name: 'Database Usage', url: '/guides/platform/database-usage', items: [] },
+        { name: 'Database Size', url: '/guides/platform/database-size', items: [] },
         { name: 'HTTP Status Codes', url: '/guides/platform/http-status-codes', items: [] },
         { name: 'Logging', url: '/guides/platform/logs', items: [] },
         { name: 'Metrics', url: '/guides/platform/metrics', items: [] },
@@ -589,6 +684,11 @@ export const platform = {
         { name: 'Permissions', url: '/guides/platform/permissions', items: [] },
         { name: 'SSL Enforcement', url: '/guides/platform/ssl-enforcement', items: [] },
       ],
+    },
+    {
+      name: 'Billing',
+      url: undefined,
+      items: [{ name: 'Spend cap', url: '/guides/platform/spend-cap', items: [] }],
     },
     {
       name: 'Single sign-on',
@@ -662,24 +762,6 @@ export const resources = {
           name: 'Render',
           url: '/guides/resources/migrating-to-supabase/render',
           items: [],
-        },
-      ],
-    },
-    {
-      name: 'Postgres resources',
-      url: undefined,
-      items: [
-        {
-          name: 'Drop all tables in schema',
-          url: '/guides/resources/postgres/dropping-all-tables-in-schema',
-        },
-        {
-          name: 'Select first row per group',
-          url: '/guides/resources/postgres/first-row-in-group',
-        },
-        {
-          name: 'Print PostgreSQL version',
-          url: '/guides/resources/postgres/which-version-of-postgres',
         },
       ],
     },
@@ -761,6 +843,7 @@ export const integrations = {
       url: undefined,
       items: [
         { name: 'Estuary', url: '/guides/integrations/estuary', items: [] },
+        { name: 'OpenAI', url: '/guides/functions/examples/openai', items: [] },
         { name: 'pgMustard', url: '/guides/integrations/pgmustard', items: [] },
         { name: 'Prisma', url: '/guides/integrations/prisma', items: [] },
         { name: 'Sequin', url: '/guides/integrations/sequin', items: [] },
